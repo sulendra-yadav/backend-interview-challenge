@@ -1,6 +1,3 @@
-Perfect 👍 Here’s a **concise and professional README** you can drop directly into your project root (`README.md`):
-
----
 
 # 🧩 Backend Interview Challenge — Offline Task Sync API
 
@@ -98,6 +95,3 @@ All tests should pass ✅
 
 All tests successfully pass — confirming that the system correctly supports **offline task management**, **sync orchestration**, and **data integrity** during connectivity transitions.
 
----
-
-Would you like me to make it a bit more *visually polished* (badges, emojis, code blocks, table for endpoints) for GitHub upload?
