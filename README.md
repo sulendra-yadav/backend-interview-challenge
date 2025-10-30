@@ -1,98 +1,103 @@
-# Backend Interview Challenge - Task Sync API
+Perfect 👍 Here’s a **concise and professional README** you can drop directly into your project root (`README.md`):
 
-This is a backend developer interview challenge focused on building a sync-enabled task management API. The challenge evaluates understanding of REST APIs, data synchronization, offline-first architecture, and conflict resolution.
+---
 
-## 📚 Documentation Overview
+# 🧩 Backend Interview Challenge — Offline Task Sync API
 
-Please read these documents in order:
+## Overview
 
-1. **[📋 Submission Instructions](./docs/SUBMISSION_INSTRUCTIONS.md)** - How to submit your solution (MUST READ)
-2. **[📝 Requirements](./docs/REQUIREMENTS.md)** - Detailed challenge requirements and implementation tasks
-3. **[🔌 API Specification](./docs/API_SPEC.md)** - Complete API documentation with examples
-4. **[🤖 AI Usage Guidelines](./docs/AI_GUIDELINES.md)** - Guidelines for using AI tools during the challenge
+This project implements a **backend API** for a personal task management application that supports **offline-first functionality**.
+Users can create, update, and delete tasks while offline, and these changes automatically **sync** once connectivity is restored.
 
-**⚠️ Important**: DO NOT create pull requests against this repository. All submissions must be through private forks.
+---
 
-## Challenge Overview
+## 🧠 Approach to the Sync Problem
 
-Candidates are expected to implement a backend API that:
-- Manages tasks (CRUD operations)
-- Supports offline functionality with a sync queue
-- Handles conflict resolution when syncing
-- Provides robust error handling
+1. **Offline-first design**
 
-## Project Structure
+   * All operations (create/update/delete) are applied locally in SQLite.
+   * Each operation is recorded in a `sync_queue` table with operation type and task data.
 
-```
-backend-interview-challenge/
-├── src/
-│   ├── db/             # Database setup and configuration
-│   ├── models/         # Data models (if needed)
-│   ├── services/       # Business logic (TO BE IMPLEMENTED)
-│   ├── routes/         # API endpoints (TO BE IMPLEMENTED)
-│   ├── middleware/     # Express middleware
-│   ├── types/          # TypeScript interfaces
-│   └── server.ts       # Express server setup
-├── tests/              # Test files
-├── docs/               # Documentation
-└── package.json        # Dependencies and scripts
-```
+2. **Sync mechanism**
 
-## Getting Started
+   * When connectivity is restored, the `SyncService` processes queued operations in **batches**.
+   * Sync attempts update `sync_status` (`pending`, `synced`, `error`).
+   * Failed syncs are retried up to 3 times before marking as `error`.
 
-### Prerequisites
-- Node.js (v18 or higher)
-- npm or yarn
+3. **Conflict resolution**
 
-### Setup
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Copy environment variables:
-   ```bash
-   cp .env.example .env
-   ```
-4. Run the development server:
-   ```bash
-   npm run dev
-   ```
+   * Implemented a **Last-Write-Wins** policy using the `updated_at` timestamp.
+   * The most recent task version always overwrites older ones, ensuring consistency across devices.
 
-### Available Scripts
+4. **Soft deletes**
 
-- `npm run dev` - Start development server with hot reload
-- `npm run build` - Build TypeScript to JavaScript
-- `npm run start` - Start production server
-- `npm test` - Run tests
-- `npm run test:ui` - Run tests with UI
-- `npm run lint` - Run ESLint
-- `npm run typecheck` - Check TypeScript types
+   * Tasks are never permanently removed. Instead, `is_deleted` is set to `true`, ensuring no data loss during sync conflicts.
 
-## Your Task
+5. **Error handling and resilience**
 
-### Key Implementation Files
+   * All network and database operations are wrapped in try/catch.
+   * Sync failures never crash the app — they are retried later.
 
-You'll need to implement the following services and routes:
+---
 
-- `src/services/taskService.ts` - Task CRUD operations
-- `src/services/syncService.ts` - Sync logic and conflict resolution  
-- `src/routes/tasks.ts` - REST API endpoints
-- `src/routes/sync.ts` - Sync-related endpoints
+## 📌 Assumptions
 
-### Before Submission
+* Users can perform operations offline; once online, all pending changes are sent to the server.
+* Sync API endpoint (`POST /api/sync`) exists and can handle batch operations.
+* SQLite is used for local persistence (as per challenge requirement).
+* Environment variable `SYNC_BATCH_SIZE` controls batch size (default: 50).
+* The app runs in a single-user mode (no multi-user auth scope needed).
 
-Ensure all of these pass:
+---
+
+## ⚙️ How to Run Locally
+
+### 1. Install dependencies
+
 ```bash
-npm test          # All tests must pass
-npm run lint      # No linting errors
-npm run typecheck # No TypeScript errors
+npm install
 ```
 
-### Time Expectation
+### 2. Run development server
 
-This challenge is designed to take 2-3 hours to complete.
+```bash
+npm run dev
+```
 
-## License
+*(Ensure `.env` file exists if required for configuration variables)*
 
-This project is for interview purposes only.
+### 3. Run all tests
+
+```bash
+npx vitest run
+```
+
+### 4. Run individual test files
+
+```bash
+npx vitest run tests/taskService.test.ts
+npx vitest run tests/syncService.test.ts
+npx vitest run tests/integration.test.ts
+```
+
+All tests should pass ✅
+
+---
+
+## 🧪 Test Coverage
+
+| Module                | Description                                        | Status   |
+| --------------------- | -------------------------------------------------- | -------- |
+| **TaskService**       | CRUD operations + queue tracking                   | ✅ Passed |
+| **SyncService**       | Connectivity, batching, retry, conflict resolution | ✅ Passed |
+| **Integration Tests** | Offline-to-online sync flow                        | ✅ Passed |
+
+---
+
+## 🏁 Result
+
+All tests successfully pass — confirming that the system correctly supports **offline task management**, **sync orchestration**, and **data integrity** during connectivity transitions.
+
+---
+
+Would you like me to make it a bit more *visually polished* (badges, emojis, code blocks, table for endpoints) for GitHub upload?
