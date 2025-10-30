@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Candidate Questions
+    url: mailto:HR@PearlThoughts.com
+    about: Please email HR@PearlThoughts.com for all challenge-related questions. Include your candidate ID in the subject line.
+  - name: Technical Clarifications
+    url: mailto:HR@PearlThoughts.com?subject=[Interview%20Challenge]%20Technical%20Question
+    about: For technical clarifications about requirements or scope
+  - name: Submission Issues
+    url: mailto:HR@PearlThoughts.com?subject=[Interview%20Challenge]%20Submission%20Issue
+    about: If you're having trouble submitting your solution
